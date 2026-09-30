@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <title>حلقة الشهيد بلال الخدري - منصة الاختبارات</title>
+  <meta name="description" content="منصة الاختبارات الإلكترونية لحلقة الشهيد بلال الخدري">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="assets/logo.jpg" type="image/jpeg">
+</head>
+<body>
+
+<div class="bg-pattern"></div>
+<div class="bg-grid"></div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ==================== LOGIN PAGE ==================== -->
+<div id="loginPage" class="page">
+  <div class="login-page-container">
+    
+    <!-- Hero Header -->
+    <div class="hero-header">
+      <img src="assets/logo.jpg" alt="شعار الحلقة" class="hero-logo">
+      <h1 class="shimmer-text">حلقة الشهيد بلال الخدري</h1>
+      <p style="color:var(--text-muted);font-size:clamp(0.9rem,2.5vw,1.1rem);">منصة الاختبارات الإلكترونية الذكية</p>
+      <div style="display:inline-flex;align-items:center;gap:0.5rem;margin-top:0.75rem;padding:0.4rem 1.25rem;background:rgba(217,119,6,0.12);border:1px solid rgba(217,119,6,0.35);border-radius:100px;font-size:0.95rem;font-weight:600;color:var(--secondary);">
+        
+      </div>
+    </div>
+
+    <!-- Cards Row -->
+    <div class="portal-cards-grid">
+      
+      <!-- Student Card -->
+      <div class="card card-glass pattern-border portal-card" onclick="showStudentLogin()" id="studentCard">
+        <div style="text-align:center;padding:0.75rem 0;">
+          <div class="portal-card-icon">🎓</div>
+          <h2 style="font-size:1.4rem;margin-bottom:0.5rem;" class="gold-text">دخول الطالب</h2>
+          <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.5rem;">أدخل اسمك للبدء بالاختبار</p>
+          <button class="btn btn-gold btn-full">دخول الاختبار ←</button>
+        </div>
+      </div>
+
+      <!-- Admin Card -->
+      <div class="card card-glass pattern-border portal-card" onclick="showAdminLogin()" id="adminCard">
+        <div style="text-align:center;padding:0.75rem 0;">
+          <div class="portal-card-icon">⚙️</div>
+          <h2 style="font-size:1.4rem;margin-bottom:0.5rem;" class="green-text">لوحة التحكم</h2>
+          <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1.5rem;">للمشرف والمدير فقط</p>
+          <button class="btn btn-primary btn-full">دخول الإدارة ←</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Decorative bottom -->
+    <div class="hero-footer-text" style="display:flex;flex-direction:column;gap:0.4rem;align-items:center;text-align:center;">
+      <p style="margin:0;"جميع الحقوق محفوظة لحلقة الشهيد بلال الخدري</p>
+      <p style="margin:0;font-size:0.88rem;color:var(--text-muted);">
+        تصميم وبرمجة: <strong style="color:var(--secondary);">عبد الرحمن الشميري</strong>
+      </p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ==================== STUDENT LOGIN ==================== -->
+<div id="studentLoginPage" class="page hidden">
+  <div class="auth-page-container">
+    <div class="card card-glass auth-card">
+      
+      <div style="text-align:center;margin-bottom:1.5rem;">
+        <div style="font-size:2.8rem;margin-bottom:0.5rem;">🎓</div>
+        <h2 class="gold-text">دخول الطالب</h2>
+        <p style="color:var(--text-muted);font-size:0.9rem;">حلقة الشهيد بلال الخدري</p>
+        <div style="margin-top:0.4rem;font-size:0.85rem;color:var(--secondary);font-weight:600;">
+          أستاذ الحلقة: عبد الرحمن الشميري
+        </div>
+      </div>
+
+      <div class="divider-gold"></div>
+
+      <div id="studentLoginMsg"></div>
+
+      <div class="form-group">
+        <label class="form-label">أدخل اسمك الكامل</label>
+        <input type="text" class="form-control" id="studentNameInput" 
+               placeholder="مثال: محمد أحمد الخالدي" 
+               autocomplete="off" autocorrect="off">
+      </div>
+
+      <button class="btn btn-gold btn-full btn-lg" id="studentLoginBtn" onclick="handleStudentLogin()">
+        <span>التحقق من الاسم والدخول</span>
+        <span>🔍</span>
+      </button>
+
+      <button class="btn btn-outline btn-full" style="margin-top:0.75rem;" onclick="showPage('loginPage')">
+        ← رجوع
+      </button>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ==================== ADMIN LOGIN ==================== -->
+<div id="adminLoginPage" class="page hidden">
+  <div class="auth-page-container">
+    <div class="card card-glass auth-card">
+      
+      <div style="text-align:center;margin-bottom:1.5rem;">
+        <div style="font-size:2.8rem;margin-bottom:0.5rem;">🔐</div>
+        <h2 class="green-text">دخول الإدارة</h2>
+        <p style="color:var(--text-muted);font-size:0.9rem;">لوحة تحكم المشرف</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <div id="adminLoginMsg"></div>
+
+      <div class="form-group">
+        <label class="form-label">اسم المستخدم</label>
+        <input type="text" class="form-control" id="adminUsernameInput" placeholder="admin" value="admin">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">كلمة المرور</label>
+        <input type="password" class="form-control" id="adminPasswordInput" placeholder="••••••••">
+      </div>
+
+      <button class="btn btn-primary btn-full btn-lg" onclick="handleAdminLogin()">
+        <span>دخول لوحة التحكم</span>
+        <span>⚙️</span>
+      </button>
+
+      <button class="btn btn-outline btn-full" style="margin-top:0.75rem;" onclick="showPage('loginPage')">
+        ← رجوع
+      </button>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ==================== ADMIN DASHBOARD ==================== -->
+<div id="adminDashboard" class="page hidden">
+  
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container navbar-inner">
+      <a class="navbar-brand" href="#" onclick="return false;">
+        <img src="assets/logo.jpg" class="navbar-logo" alt="شعار">
+        <div>
+          <div class="navbar-title">لوحة التحكم</div>
+          <div class="navbar-subtitle">حلقة الشهيد بلال الخدري</div>
+        </div>
+      </a>
+      <div class="navbar-actions">
+        <span class="badge badge-primary" id="adminUserBadge">⚙️ مشرف</span>
+        <button class="btn btn-sm btn-danger" onclick="adminLogout()">خروج 🚪</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <ul class="sidebar-nav">
+        <li><a onclick="showAdminSection('overview')" class="active" id="nav-overview">📊 نظرة عامة</a></li>
+        <li><a onclick="showAdminSection('exams')" id="nav-exams">📝 الاختبارات</a></li>
+        <li><a onclick="showAdminSection('students')" id="nav-students">👥 الطلاب</a></li>
+        <li><a onclick="showAdminSection('results')" id="nav-results">📈 النتائج</a></li>
+        <li><a onclick="showAdminSection('settings')" id="nav-settings">⚙️ الإعدادات</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      
+      <!-- Overview Section -->
+      <div id="section-overview" class="page-section">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+          <h2 class="gold-text" style="margin:0;">📊 نظرة عامة</h2>
+          <div class="badge badge-primary" style="font-size:0.88rem;padding:0.4rem 1rem;">
+            👨‍🏫 أستاذ الحلقة: عبد الرحمن الشميري
+          </div>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;">
+          <div class="stat-card">
+            <div class="stat-value" id="stat-exams">0</div>
+            <div class="stat-label">اختبار منشأ</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-students">0</div>
+            <div class="stat-label">طالب مسجل</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-results">0</div>
+            <div class="stat-label">اختبار مكتمل</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-avg">-</div>
+            <div class="stat-label">متوسط الدرجات</div>
+          </div>
+        </div>
+
+        <!-- Active Exam -->
+        <div class="card" id="activeExamWidget">
+          <h3 style="margin-bottom:1rem;" class="gold-text">🟢 الاختبار النشط حالياً</h3>
+          <div id="activeExamContent">
+            <p style="color:var(--text-muted)">لا يوجد اختبار نشط حالياً. <a href="#" onclick="showAdminSection('exams')" style="color:var(--secondary)">أنشئ اختباراً</a></p>
+          </div>
+        </div>
+
+        <!-- Recent Results -->
+        <div class="card" style="margin-top:1.5rem;">
+          <h3 style="margin-bottom:1rem;" class="gold-text">📋 آخر النتائج</h3>
+          <div id="recentResultsWidget">
+            <p style="color:var(--text-muted)">لا توجد نتائج بعد.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Exams Section -->
+      <div id="section-exams" class="page-section hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <h2 class="gold-text">📝 الاختبارات</h2>
+          <button class="btn btn-gold" onclick="openCreateExamModal()">+ إنشاء اختبار جديد</button>
+        </div>
+        <div id="examsList">
+          <p style="color:var(--text-muted)">لا توجد اختبارات بعد. ابدأ بإنشاء اختبار جديد.</p>
+        </div>
+      </div>
+
+      <!-- Students Section -->
+      <div id="section-students" class="page-section hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <h2 class="gold-text">👥 الطلاب المسجلون</h2>
+          <button class="btn btn-gold" onclick="openAddStudentModal()">+ إضافة طالب</button>
+        </div>
+
+        <!-- Import students -->
+        <div class="card" style="margin-bottom:1.5rem;padding:1rem 1.5rem;">
+          <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+            <textarea class="form-control" id="bulkStudentsInput" placeholder="إضافة متعددة: اكتب أسماء الطلاب (سطر لكل طالب)" style="height:80px;flex:1;min-width:200px;"></textarea>
+            <button class="btn btn-primary" onclick="addBulkStudents()">📥 إضافة دفعة</button>
+          </div>
+        </div>
+
+        <div id="studentsList"></div>
+      </div>
+
+      <!-- Results Section -->
+      <div id="section-results" class="page-section hidden">
+        <h2 style="margin-bottom:1rem;" class="gold-text">📈 النتائج والتقارير</h2>
+        
+        <div style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;">
+          <select class="form-control" id="resultsFilterExam" style="max-width:300px;" onchange="loadResults()">
+            <option value="">جميع الاختبارات</option>
+          </select>
+          <button class="btn btn-outline btn-sm" onclick="exportResults()">📤 تصدير النتائج</button>
+        </div>
+
+        <div id="resultsList"></div>
+      </div>
+
+      <!-- Settings Section -->
+      <div id="section-settings" class="page-section hidden">
+        <h2 style="margin-bottom:1.5rem;" class="gold-text">⚙️ الإعدادات</h2>
+        
+        <div class="card" style="max-width:600px;">
+          <h3 style="margin-bottom:1.5rem;">إعدادات الأمان والاختبار</h3>
+          
+          <div class="form-group">
+            <label class="form-label">مدة الاختبار (دقائق) - 0 = غير محدود</label>
+            <input type="number" class="form-control" id="settingDuration" min="0" max="300">
+          </div>
+
+          <div class="form-group" style="display:flex;align-items:center;gap:1rem;">
+            <input type="checkbox" id="settingAutoSubmit" style="width:18px;height:18px;accent-color:var(--secondary);">
+            <label for="settingAutoSubmit" class="form-label" style="margin:0;cursor:pointer;">
+              إرسال الاختبار تلقائياً عند خروج الطالب من الصفحة
+            </label>
+          </div>
+
+          <div class="form-group" style="display:flex;align-items:center;gap:1rem;">
+            <input type="checkbox" id="settingShowScore" style="width:18px;height:18px;accent-color:var(--secondary);">
+            <label for="settingShowScore" class="form-label" style="margin:0;cursor:pointer;">
+              إظهار النتيجة فور إتمام الاختبار
+            </label>
+          </div>
+
+          <div class="divider"></div>
+
+          <h3 style="margin-bottom:1rem;">تغيير كلمة مرور الإدارة</h3>
+          
+          <div class="form-group">
+            <label class="form-label">كلمة المرور الجديدة</label>
+            <input type="password" class="form-control" id="newAdminPassword" placeholder="كلمة مرور جديدة">
+          </div>
+          <div class="form-group">
+            <label class="form-label">تأكيد كلمة المرور</label>
+            <input type="password" class="form-control" id="confirmAdminPassword" placeholder="أعد كتابة كلمة المرور">
+          </div>
+
+          <button class="btn btn-primary" onclick="saveSettings()">💾 حفظ الإعدادات</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+
+<!-- ==================== EXAM PAGE ==================== -->
+<div id="examPage" class="page hidden">
+  
+  <!-- Fullscreen Warning Banner -->
+  <div id="fullscreenBanner" class="fullscreen-banner hidden">
+    ⚠️ تم اكتشاف خروجك من وضع الشاشة الكاملة! يرجى العودة فوراً أو سيتم إرسال الاختبار تلقائياً.
+  </div>
+
+  <!-- Exam Navbar -->
+  <nav class="navbar exam-navbar">
+    <div class="container navbar-inner exam-navbar-inner">
+      <div class="exam-info-header">
+        <div class="navbar-title" id="examNavTitle">الاختبار</div>
+        <div class="navbar-subtitle" id="examStudentName">الطالب: -</div>
+      </div>
+      <div class="navbar-actions exam-nav-actions">
+        <div class="exam-timer" id="examTimer">⏱️ --:--</div>
+        <button class="btn btn-gold btn-sm" onclick="confirmSubmitExam()" id="submitExamBtn">
+          إرسال الاختبار ✓
+        </button>
+      </div>
+    </div>
+    <!-- Progress -->
+    <div class="exam-progress-wrap">
+      <div class="exam-progress-info">
+        <span id="progressLabel">تقدمك في الاختبار</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Exam Questions -->
+  <div class="container exam-container">
+    <div id="examQuestionsContainer"></div>
+    
+    <!-- Submit Button Bottom -->
+    <div class="exam-submit-bottom">
+      <button class="btn btn-gold btn-lg btn-exam-finish" onclick="confirmSubmitExam()">
+        ✅ إرسال الاختبار والحصول على النتيجة
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ==================== RESULT PAGE ==================== -->
+<div id="resultPage" class="page hidden">
+  <div class="result-page-wrap">
+    <div class="container" style="max-width:800px;">
+      
+      <!-- Header -->
+      <div class="card result-header-card">
+        <img src="assets/logo.jpg" alt="شعار" class="result-logo">
+        <h2 class="shimmer-text" style="margin-bottom:0.25rem;">نتيجة اختبارك</h2>
+        <p style="color:var(--text-muted);" id="resultStudentName">-</p>
+      </div>
+
+      <!-- Score Card -->
+      <div class="card" style="text-align:center;margin-bottom:1.5rem;">
+        <div class="score-circle" id="resultScoreCircle">
+          <div class="score-circle-inner">
+            <div class="score-pct" id="resultPct">0%</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">النتيجة</div>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem;">
+          <div style="font-size:clamp(1.6rem, 5vw, 2.2rem);font-weight:900;" id="resultScore">0 / 0</div>
+          <div style="color:var(--text-muted);font-size:0.9rem;">الدرجة المحصلة / الكلية</div>
+          <div style="margin-top:0.75rem;" id="resultGradeBadge"></div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="result-actions-row">
+          <button class="btn btn-gold btn-responsive" onclick="downloadResult()">📥 تحميل النتيجة PDF</button>
+          <button class="btn btn-primary btn-responsive" onclick="printResult()">🖨️ طباعة النتيجة</button>
+        </div>
+        <p style="color:var(--text-muted);font-size:0.8rem;text-align:center;margin-top:0.75rem;">
+          تم إرسال نتيجتك إلى لوحة التحكم تلقائياً ✓
+        </p>
+      </div>
+
+      <!-- Details -->
+      <div class="card">
+        <h3 style="margin-bottom:1rem;" class="gold-text">📋 تفاصيل الإجابات</h3>
+        <div id="resultDetails"></div>
+      </div>
+
+      <!-- Footer Note -->
+      <div style="text-align:center;margin-top:1.5rem;padding-bottom:1rem;color:var(--text-muted);font-size:0.85rem;">
+        <p style="margin:0;"> <strong style="color:var(--secondary);">عبد الرحمن الشميري</strong> &nbsp;|&nbsp; برمجة وتصميم: <strong style="color:var(--secondary);">عبد الرحمن الشميري</strong></p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ==================== MODALS ==================== -->
+
+<!-- Confirm Submit Modal -->
+<div class="modal-overlay hidden" id="confirmSubmitModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 class="modal-title">⚠️ تأكيد إرسال الاختبار</h3>
+    </div>
+    <p style="color:var(--text-secondary);margin-bottom:1rem;">هل أنت متأكد من رغبتك في إرسال الاختبار؟ لن تتمكن من التعديل بعد الإرسال.</p>
+    <div id="confirmSubmitInfo" style="margin-bottom:1.5rem;padding:1rem;background:rgba(200,153,31,0.07);border-radius:var(--radius-sm);border:1px solid var(--border-color);">
+    </div>
+    <div class="modal-btn-row">
+      <button class="btn btn-outline" onclick="closeModal('confirmSubmitModal')">إلغاء</button>
+      <button class="btn btn-gold" onclick="submitExam()">✅ نعم، إرسال الاختبار</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Exam Modal -->
+<div class="modal-overlay hidden" id="createExamModal">
+  <div class="modal-box modal-box-large">
+    <div class="modal-header">
+      <h3 class="modal-title" id="examModalTitle">📝 إنشاء اختبار جديد</h3>
+      <button class="btn btn-icon btn-outline" onclick="closeModal('createExamModal')">✕</button>
+    </div>
+
+    <input type="hidden" id="editingExamId">
+
+    <div class="exam-modal-grid">
+      <div class="form-group" style="margin:0;">
+        <label class="form-label">عنوان الاختبار *</label>
+        <input type="text" class="form-control" id="examTitle" placeholder="مثال: اختبار الفقه - الفصل الأول">
+      </div>
+      <div class="form-group" style="margin:0;">
+        <label class="form-label">المادة / الموضوع</label>
+        <input type="text" class="form-control" id="examSubject" placeholder="مثال: الفقه الإسلامي">
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-top:1rem;">
+      <label class="form-label">تعليمات الاختبار (اختياري)</label>
+      <textarea class="form-control" id="examInstructions" placeholder="اكتب أي تعليمات أو ملاحظات للطلاب..."></textarea>
+    </div>
+
+    <div class="divider-gold"></div>
+
+    <!-- Questions Builder -->
+    <div class="builder-top-bar">
+      <h4 class="gold-text">الأسئلة</h4>
+      <div class="builder-btn-group">
+        <button class="btn btn-sm btn-primary" onclick="addQuestion('mcq')">+ اختيار متعدد</button>
+        <button class="btn btn-sm btn-primary" onclick="addQuestion('tf')">+ صح/خطأ</button>
+        <button class="btn btn-sm btn-primary" onclick="addQuestion('fill')">+ إكمال فراغ</button>
+        <button class="btn btn-sm btn-primary" onclick="addQuestion('essay')">+ مقالي</button>
+      </div>
+    </div>
+
+    <div id="questionsBuilder" class="questions-builder-scroll">
+      <div id="questionsList"></div>
+      <div id="noQuestionsMsg" style="text-align:center;padding:2rem;color:var(--text-muted);">
+        لم تضف أسئلة بعد. اختر نوع السؤال من الأزرار أعلاه.
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="modal-btn-row">
+      <button class="btn btn-outline" onclick="closeModal('createExamModal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="saveExam(false)">💾 حفظ كمسودة</button>
+      <button class="btn btn-gold" onclick="saveExam(true)">✅ حفظ وتفعيل الاختبار</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Student Modal -->
+<div class="modal-overlay hidden" id="addStudentModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 class="modal-title">👤 إضافة طالب</h3>
+      <button class="btn btn-icon btn-outline" onclick="closeModal('addStudentModal')">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">اسم الطالب الكامل</label>
+      <input type="text" class="form-control" id="newStudentName" placeholder="أدخل الاسم الكامل" autofocus>
+    </div>
+    <div class="modal-btn-row">
+      <button class="btn btn-outline" onclick="closeModal('addStudentModal')">إلغاء</button>
+      <button class="btn btn-gold" onclick="addStudent()">✅ إضافة الطالب</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Result Detail Modal -->
+<div class="modal-overlay hidden" id="resultDetailModal">
+  <div class="modal-box modal-box-large">
+    <div class="modal-header">
+      <h3 class="modal-title" id="resultDetailTitle">تفاصيل النتيجة</h3>
+      <button class="btn btn-icon btn-outline" onclick="closeModal('resultDetailModal')">✕</button>
+    </div>
+    <div id="resultDetailContent" style="max-height:65vh;overflow-y:auto;padding-left:4px;"></div>
+    <div class="modal-btn-row" style="margin-top:1.5rem;">
+      <button class="btn btn-outline" onclick="closeModal('resultDetailModal')">إغلاق</button>
+      <button class="btn btn-gold" onclick="downloadResultFromAdmin()">📥 تحميل PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- Essay Grading Modal -->
+<div class="modal-overlay hidden" id="essayGradeModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 class="modal-title">✍️ تصحيح السؤال المقالي</h3>
+      <button class="btn btn-icon btn-outline" onclick="closeModal('essayGradeModal')">✕</button>
+    </div>
+    <div id="essayGradeContent"></div>
+  </div>
+</div>
+
+<script src="js/db.js"></script>
+<script src="js/pdf.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
