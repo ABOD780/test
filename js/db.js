@@ -1,7 +1,13 @@
-/**
- * حلقة الشهيد بلال الخدري - نظام إدارة البيانات
- * Data Manager - LocalStorage Based
- */
+// ==================== FIREBASE CONFIGURATION ====================
+const firebaseConfig = {
+  apiKey: "AIzaSyDAL1C32kP-vMnAe2eEM9rzfbO86C4lRQI",
+  authDomain: "bilal-exam-35ecc.firebaseapp.com",
+  databaseURL: "https://bilal-exam-35ecc-default-rtdb.firebaseio.com",
+  projectId: "bilal-exam-35ecc",
+  storageBucket: "bilal-exam-35ecc.firebasestorage.app",
+  messagingSenderId: "173313558494",
+  appId: "1:173313558494:web:732071ca6581d42976ff4f"
+};
 
 const DB = {
   // ============ KEYS ============
@@ -14,12 +20,102 @@ const DB = {
     SETTINGS: 'blal_settings',
   },
 
+  firebaseApp: null,
+  rtdb: null,
+  isCloudConnected: false,
+
+  // ============ INITIALIZATION ============
+  init() {
+    try {
+      if (typeof firebase !== 'undefined' && firebase.initializeApp) {
+        if (!firebase.apps || !firebase.apps.length) {
+          this.firebaseApp = firebase.initializeApp(firebaseConfig);
+        } else {
+          this.firebaseApp = firebase.apps[0];
+        }
+        this.rtdb = firebase.database();
+        this.isCloudConnected = true;
+        this.setupRealtimeListeners();
+        console.log('✅ Firebase Realtime Database متصل بالسحابة بنجاح!');
+      }
+    } catch (err) {
+      console.warn('⚠️ تعذر الاتصال بـ Firebase، يتم استخدام التخزين المحلي:', err);
+    }
+  },
+
+  setupRealtimeListeners() {
+    if (!this.rtdb) return;
+
+    // مزامنة فورية للطلاب
+    this.rtdb.ref('students').on('value', (snap) => {
+      const val = snap.val();
+      if (val !== null) {
+        const list = Array.isArray(val) ? val : Object.values(val);
+        this.setLocal(this.KEYS.STUDENTS, list);
+        window.dispatchEvent(new CustomEvent('blal-db-updated', { detail: { type: 'students' } }));
+      }
+    });
+
+    // مزامنة فورية للاختبارات
+    this.rtdb.ref('exams').on('value', (snap) => {
+      const val = snap.val();
+      if (val !== null) {
+        const list = Array.isArray(val) ? val : Object.values(val);
+        this.setLocal(this.KEYS.EXAMS, list);
+        window.dispatchEvent(new CustomEvent('blal-db-updated', { detail: { type: 'exams' } }));
+      }
+    });
+
+    // مزامنة فورية للنتائج
+    this.rtdb.ref('results').on('value', (snap) => {
+      const val = snap.val();
+      if (val !== null) {
+        const list = Array.isArray(val) ? val : Object.values(val);
+        this.setLocal(this.KEYS.RESULTS, list);
+        window.dispatchEvent(new CustomEvent('blal-db-updated', { detail: { type: 'results' } }));
+      }
+    });
+
+    // مزامنة فورية للإعدادات
+    this.rtdb.ref('settings').on('value', (snap) => {
+      const val = snap.val();
+      if (val !== null) {
+        this.setLocal(this.KEYS.SETTINGS, val);
+      }
+    });
+
+    // مزامنة فورية لبيانات المشرف
+    this.rtdb.ref('admin').on('value', (snap) => {
+      const val = snap.val();
+      if (val !== null) {
+        this.setLocal(this.KEYS.ADMIN, val);
+      }
+    });
+  },
+
   // ============ HELPERS ============
   get(key) {
     try { return JSON.parse(localStorage.getItem(key)) || null; } catch { return null; }
   },
-  set(key, val) {
+  setLocal(key, val) {
     localStorage.setItem(key, JSON.stringify(val));
+  },
+  set(key, val) {
+    this.setLocal(key, val);
+    // مزامنة سحابية مع Firebase
+    if (this.rtdb) {
+      const cloudMap = {
+        [this.KEYS.STUDENTS]: 'students',
+        [this.KEYS.EXAMS]: 'exams',
+        [this.KEYS.RESULTS]: 'results',
+        [this.KEYS.SETTINGS]: 'settings',
+        [this.KEYS.ADMIN]: 'admin',
+      };
+      const path = cloudMap[key];
+      if (path) {
+        this.rtdb.ref(path).set(val).catch(e => console.warn('Sync error:', e));
+      }
+    }
   },
   remove(key) {
     localStorage.removeItem(key);
@@ -125,15 +221,17 @@ const DB = {
   },
   saveResult(result) {
     const results = this.getResults();
-    // Update or insert
     const idx = results.findIndex(r => r.id === result.id);
     if (idx !== -1) {
       results[idx] = result;
     } else {
       results.push(result);
     }
-    this.set(this.KEYS.RESULTS, results);
+    this.saveResults(results);
     return result;
+  },
+  saveResults(list) {
+    this.set(this.KEYS.RESULTS, list);
   },
   getResultsByExam(examId) {
     return this.getResults().filter(r => r.examId === examId);
@@ -143,7 +241,7 @@ const DB = {
   },
   deleteResult(id) {
     const results = this.getResults().filter(r => r.id !== id);
-    this.set(this.KEYS.RESULTS, results);
+    this.saveResults(results);
   },
 
   // ============ SESSION (current exam attempt) ============
@@ -151,7 +249,7 @@ const DB = {
     return this.get(this.KEYS.SESSION);
   },
   setSession(data) {
-    this.set(this.KEYS.SESSION, data);
+    this.setLocal(this.KEYS.SESSION, data);
   },
   clearSession() {
     this.remove(this.KEYS.SESSION);
@@ -166,7 +264,28 @@ const DB = {
       examDurationMinutes: 60,
     };
   },
+  saveSettings(settings) {
+    this.set(this.KEYS.SETTINGS, settings);
+  },
+
   seedInitialData() {
+    this.init();
+
+    // فحص إذا كانت قاعدة البيانات السحابية أو المحلية تحتوي على بيانات أولية
+    if (this.rtdb) {
+      this.rtdb.ref('exams').once('value').then(snap => {
+        if (!snap.exists() || !snap.val()) {
+          this.pushDefaultSeedData();
+        }
+      });
+    } else {
+      if (!this.getStudents().length || !this.getExams().length) {
+        this.pushDefaultSeedData();
+      }
+    }
+  },
+
+  pushDefaultSeedData() {
     if (!this.getStudents().length) {
       this.saveStudents([
         { id: '1', name: 'محمد أحمد الخالدي', addedAt: new Date().toISOString(), examTaken: false, allowRetake: false },

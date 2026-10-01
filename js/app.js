@@ -27,6 +27,19 @@ let currentAdminResultId = null; // for admin detail view
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   initApp();
+
+  // الاستماع للتحديثات السحابية الفورية من Firebase
+  window.addEventListener('blal-db-updated', (e) => {
+    const adminPage = document.getElementById('adminDashboard');
+    if (adminPage && !adminPage.classList.contains('hidden')) {
+      const activeTab = document.querySelector('.nav-tab.active');
+      const tabId = activeTab ? activeTab.dataset.tab : 'dashboard';
+      if (tabId === 'dashboard') renderDashboardTab();
+      else if (tabId === 'exams') renderExamsTab();
+      else if (tabId === 'students') renderStudentsTab();
+      else if (tabId === 'results') renderResultsTab();
+    }
+  });
 });
 
 function initApp() {
